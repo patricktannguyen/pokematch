@@ -21,7 +21,15 @@ export function MatchHistory({ history }: Props) {
             <span className="capitalize">{event.toName}</span>{" "}
             <span className="font-mono tabular-nums text-slate-400 dark:text-slate-500">
               (Base XP {event.value})
-            </span>
+            </span>{" "}
+            —{" "}
+            {event.winnerName ? (
+              <>
+                🏆 <span className="capitalize">{event.winnerName}</span> wins
+              </>
+            ) : (
+              <>⚖️ evenly matched</>
+            )}
           </li>
         ))}
       </ul>

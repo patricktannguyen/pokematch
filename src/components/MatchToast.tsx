@@ -17,7 +17,15 @@ export function MatchToast({ toast }: Props) {
         🔍 Match confirmed!{" "}
         <span className="capitalize">{toast.fromName}</span> &{" "}
         <span className="capitalize">{toast.toName}</span> both register Base
-        XP {toast.value}.
+        XP {toast.value}.{" "}
+        {toast.winnerName ? (
+          <>
+            🏆 <span className="capitalize">{toast.winnerName}</span> would
+            win!
+          </>
+        ) : (
+          <>⚖️ Evenly matched!</>
+        )}
       </div>
     </div>
   );

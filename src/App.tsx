@@ -11,14 +11,22 @@ import { PokemonCard } from "./components/PokemonCard";
 import { ShinyProgress } from "./components/ShinyProgress";
 import { StatusBanner } from "./components/StatusBanner";
 import { StatusLed } from "./components/StatusLed";
+import { determineWinner } from "./data/battleOutcome";
 import { getTypeColor } from "./data/typeColors";
 import { isShinyThisSession } from "./data/shinyDex";
 import { useDiscoveredDex } from "./hooks/useDiscoveredDex";
 import { usePokemonSelection } from "./hooks/usePokemonSelection";
 import { useSpeciesInfo } from "./hooks/useSpeciesInfo";
-import type { MatchEvent, PokemonSummary } from "./types/pokemon";
+import type { MatchEvent, PokemonDetail, PokemonSummary } from "./types/pokemon";
 
 const INITIAL_ID = 1;
+
+interface PendingMatch {
+  fromDetail: PokemonDetail;
+  toId: number;
+  toName: string;
+  value: number;
+}
 
 function App() {
   const { detail, matches, status, errorMessage, selectId, stepId, selectRandom } =
@@ -31,6 +39,7 @@ function App() {
   const [toast, setToast] = useState<MatchEvent | null>(null);
   const [matchHistory, setMatchHistory] = useState<MatchEvent[]>([]);
   const toastSeq = useRef(0);
+  const pendingMatchRef = useRef<PendingMatch | null>(null);
 
   const shinyDiscoveredCount = useMemo(
     () => [...discovered].filter(isShinyThisSession).length,
@@ -54,13 +63,37 @@ function App() {
   }, [toast]);
 
   useEffect(() => {
+    const pending = pendingMatchRef.current;
+    if (!pending) return;
+    if (status === "error") {
+      pendingMatchRef.current = null;
+      return;
+    }
+    if (!detail || detail.id !== pending.toId) return;
+    pendingMatchRef.current = null;
+
+    const winner = determineWinner(pending.fromDetail, detail);
+    const event: MatchEvent = {
+      id: ++toastSeq.current,
+      fromName: pending.fromDetail.name,
+      toName: pending.toName,
+      value: pending.value,
+      winnerName: winner?.name ?? null,
+    };
+    setToast(event);
+    setMatchHistory((h) => [...h, event]);
+  }, [detail, status]);
+
+  useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if ((e.target as HTMLElement)?.tagName === "INPUT") return;
       if (e.key === "ArrowRight") {
+        pendingMatchRef.current = null;
         setDirection("next");
         stepId(1);
       } else if (e.key === "ArrowLeft") {
+        pendingMatchRef.current = null;
         setDirection("prev");
         stepId(-1);
       }
@@ -70,11 +103,13 @@ function App() {
   }, [stepId]);
 
   function handleSelectId(id: number) {
+    pendingMatchRef.current = null;
     setDirection(null);
     selectId(id);
   }
 
   function handleRandom() {
+    pendingMatchRef.current = null;
     setDirection(null);
     selectRandom();
   }
@@ -82,14 +117,12 @@ function App() {
   function handleSelectMatch(pokemon: PokemonSummary) {
     setDirection(null);
     if (detail) {
-      const event: MatchEvent = {
-        id: ++toastSeq.current,
-        fromName: detail.name,
+      pendingMatchRef.current = {
+        fromDetail: detail,
+        toId: pokemon.id,
         toName: pokemon.name,
         value: pokemon.base_experience,
       };
-      setToast(event);
-      setMatchHistory((h) => [...h, event]);
     }
     selectId(pokemon.id);
   }

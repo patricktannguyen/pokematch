@@ -26,4 +26,5 @@ export interface MatchEvent {
   fromName: string;
   toName: string;
   value: number;
+  winnerName: string | null;
 }
