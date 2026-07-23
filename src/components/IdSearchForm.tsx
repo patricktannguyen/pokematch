@@ -2,9 +2,10 @@ import { useState, type FormEvent } from "react";
 
 interface Props {
   onSubmit: (id: number) => void;
+  onRandom: () => void;
 }
 
-export function IdSearchForm({ onSubmit }: Props) {
+export function IdSearchForm({ onSubmit, onRandom }: Props) {
   const [value, setValue] = useState("");
 
   function handleSubmit(e: FormEvent) {
@@ -30,6 +31,15 @@ export function IdSearchForm({ onSubmit }: Props) {
         className="rounded-lg bg-indigo-600 px-5 py-2 font-medium text-white transition hover:bg-indigo-700 active:scale-95"
       >
         Search
+      </button>
+      <button
+        type="button"
+        onClick={onRandom}
+        aria-label="Surprise me with a random Pokémon"
+        title="Surprise me"
+        className="rounded-lg border border-slate-300 px-3 py-2 text-lg transition active:scale-95 dark:border-slate-600"
+      >
+        🎲
       </button>
     </form>
   );

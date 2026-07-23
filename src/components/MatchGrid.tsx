@@ -2,7 +2,7 @@ import type { PokemonSummary } from "../types/pokemon";
 
 interface Props {
   matches: PokemonSummary[];
-  onSelect: (id: number) => void;
+  onSelect: (pokemon: PokemonSummary) => void;
 }
 
 export function MatchGrid({ matches, onSelect }: Props) {
@@ -12,7 +12,7 @@ export function MatchGrid({ matches, onSelect }: Props) {
         <button
           key={pokemon.id}
           type="button"
-          onClick={() => onSelect(pokemon.id)}
+          onClick={() => onSelect(pokemon)}
           style={{ animationDelay: `${Math.min(index, 20) * 30}ms` }}
           className="flex animate-fade-in flex-col items-center gap-1 rounded-lg border border-slate-200 bg-white p-3 transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500"
         >

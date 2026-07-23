@@ -1,23 +1,35 @@
 import { CryButton } from "./CryButton";
+import { RegisteredStamp } from "./RegisteredStamp";
 import { StatBars } from "./StatBars";
+import { formatDexNumber } from "../data/dexNumber";
 import { getTypeColor } from "../data/typeColors";
 import type { PokemonDetail } from "../types/pokemon";
 
 interface Props {
   pokemon: PokemonDetail;
   isShiny: boolean;
+  direction: "next" | "prev" | null;
+  justRegistered: boolean;
 }
 
-export function PokemonCard({ pokemon, isShiny }: Props) {
+const ENTER_ANIMATION: Record<"next" | "prev" | "none", string> = {
+  next: "animate-dex-slide-next",
+  prev: "animate-dex-slide-prev",
+  none: "animate-rise-in",
+};
+
+export function PokemonCard({ pokemon, isShiny, direction, justRegistered }: Props) {
   const accent = getTypeColor(pokemon.types[0] ?? "").accent;
   const showShiny = isShiny && Boolean(pokemon.shinySprite);
   const spriteSrc = showShiny ? pokemon.shinySprite : pokemon.sprite;
+  const enterAnim = ENTER_ANIMATION[direction ?? "none"];
 
   return (
     <div
-      className="flex animate-rise-in items-center gap-6 rounded-xl border border-t-4 border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+      className={`dex-screen relative flex ${enterAnim} items-center gap-6 rounded-xl border border-t-4 border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800`}
       style={{ borderTopColor: accent }}
     >
+      {justRegistered && <RegisteredStamp />}
       {spriteSrc && (
         <div className="relative shrink-0">
           <img
@@ -38,8 +50,8 @@ export function PokemonCard({ pokemon, isShiny }: Props) {
         </div>
       )}
       <div>
-        <p className="text-sm font-medium text-slate-400 dark:text-slate-500">
-          #{pokemon.id}
+        <p className="font-mono text-sm font-medium tabular-nums text-slate-400 dark:text-slate-500">
+          {formatDexNumber(pokemon.id)}
         </p>
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold capitalize text-slate-900 dark:text-slate-50">
@@ -68,7 +80,7 @@ export function PokemonCard({ pokemon, isShiny }: Props) {
             <dt className="inline font-medium text-slate-500 dark:text-slate-400">
               Base XP:{" "}
             </dt>
-            <dd className="inline">
+            <dd className="inline font-mono tabular-nums">
               {pokemon.base_experience ?? "unknown"}
             </dd>
           </div>
@@ -76,13 +88,13 @@ export function PokemonCard({ pokemon, isShiny }: Props) {
             <dt className="inline font-medium text-slate-500 dark:text-slate-400">
               Height:{" "}
             </dt>
-            <dd className="inline">{pokemon.height / 10} m</dd>
+            <dd className="inline font-mono tabular-nums">{pokemon.height / 10} m</dd>
           </div>
           <div>
             <dt className="inline font-medium text-slate-500 dark:text-slate-400">
               Weight:{" "}
             </dt>
-            <dd className="inline">{pokemon.weight / 10} kg</dd>
+            <dd className="inline font-mono tabular-nums">{pokemon.weight / 10} kg</dd>
           </div>
         </dl>
         <StatBars stats={pokemon.stats} accentColor={accent} />

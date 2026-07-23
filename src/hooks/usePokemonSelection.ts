@@ -4,7 +4,7 @@ import { findMatches } from "../data/findMatches";
 import dataset from "../data/pokemon-base-experience.json";
 import type { PokemonDetail, PokemonSummary } from "../types/pokemon";
 
-type Status = "idle" | "loading" | "error";
+export type Status = "idle" | "loading" | "error";
 
 interface State {
   selectedId: number;
@@ -37,6 +37,16 @@ export function usePokemonSelection(initialId: number) {
 
   const selectId = useCallback((id: number) => {
     setState((s) => ({ ...s, selectedId: id }));
+  }, []);
+
+  const stepId = useCallback((delta: number) => {
+    setState((s) => ({ ...s, selectedId: Math.max(1, s.selectedId + delta) }));
+  }, []);
+
+  const selectRandom = useCallback(() => {
+    const pool = dataset as PokemonSummary[];
+    const entry = pool[Math.floor(Math.random() * pool.length)];
+    setState((s) => ({ ...s, selectedId: entry.id }));
   }, []);
 
   useEffect(() => {
@@ -89,5 +99,5 @@ export function usePokemonSelection(initialId: number) {
       });
   }, [state.selectedId]);
 
-  return { ...state, selectId };
+  return { ...state, selectId, stepId, selectRandom };
 }

@@ -1,3 +1,5 @@
+import { pickEnglishFlavorText } from "../data/flavorText";
+
 export interface EvolutionChainLink {
   species: { name: string; url: string };
   evolves_to: EvolutionChainLink[];
@@ -37,14 +39,23 @@ export function spriteUrlForId(id: number): string {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 }
 
-export async function fetchEvolutionChainBySpeciesUrl(
-  speciesUrl: string,
-): Promise<EvolutionStage[]> {
+export interface SpeciesInfo {
+  stages: EvolutionStage[];
+  flavorText: string | null;
+}
+
+interface PokeApiSpeciesResponse {
+  evolution_chain: { url: string };
+  flavor_text_entries: { flavor_text: string; language: { name: string } }[];
+}
+
+export async function fetchSpeciesInfo(speciesUrl: string): Promise<SpeciesInfo> {
   const speciesRes = await fetch(speciesUrl);
   if (!speciesRes.ok) {
     throw new Error(`PokeAPI error: ${speciesRes.status} ${speciesRes.statusText}`);
   }
-  const species: { evolution_chain: { url: string } } = await speciesRes.json();
+  const species: PokeApiSpeciesResponse = await speciesRes.json();
+  const flavorText = pickEnglishFlavorText(species.flavor_text_entries);
 
   const chainRes = await fetch(species.evolution_chain.url);
   if (!chainRes.ok) {
@@ -52,5 +63,5 @@ export async function fetchEvolutionChainBySpeciesUrl(
   }
   const chainData: { chain: EvolutionChainLink } = await chainRes.json();
 
-  return flattenEvolutionChain(chainData.chain);
+  return { stages: flattenEvolutionChain(chainData.chain), flavorText };
 }

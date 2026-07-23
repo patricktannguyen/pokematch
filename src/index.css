@@ -6,6 +6,10 @@
   --animate-rise-in: rise-in 0.35s ease-out;
   --animate-fade-in: fade-in 0.3s ease-out both;
   --animate-sparkle: sparkle 1.6s ease-in-out infinite;
+  --animate-dex-slide-next: dex-slide-next 0.3s ease-out;
+  --animate-dex-slide-prev: dex-slide-prev 0.3s ease-out;
+  --animate-stamp-in: stamp-in 0.4s ease-out both;
+  --animate-toast-in: toast-in 0.25s ease-out both;
 }
 
 @keyframes rise-in {
@@ -38,4 +42,81 @@
     opacity: 1;
     transform: scale(1.15);
   }
+}
+
+@keyframes dex-slide-next {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dex-slide-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(1.6) rotate(-12deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.9) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-8deg);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dex-screen {
+  position: relative;
+}
+
+.dex-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(100, 116, 139, 0.05) 0px,
+    rgba(100, 116, 139, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.dark .dex-screen::after {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(148, 163, 184, 0.08) 0px,
+    rgba(148, 163, 184, 0.08) 1px,
+    transparent 1px,
+    transparent 3px
+  );
 }

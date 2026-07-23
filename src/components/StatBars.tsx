@@ -25,7 +25,7 @@ export function StatBars({ stats, accentColor }: Props) {
               }}
             />
           </div>
-          <span className="w-8 text-right text-slate-600 dark:text-slate-300">
+          <span className="w-8 text-right font-mono tabular-nums text-slate-600 dark:text-slate-300">
             {stat.base}
           </span>
         </div>

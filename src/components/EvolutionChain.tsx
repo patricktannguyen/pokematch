@@ -1,15 +1,13 @@
-import { spriteUrlForId } from "../api/evolutionChain";
-import { useEvolutionChain } from "../hooks/useEvolutionChain";
+import { spriteUrlForId, type EvolutionStage } from "../api/evolutionChain";
 
 interface Props {
-  speciesUrl: string;
+  stages: EvolutionStage[];
+  status: "loading" | "error" | "success";
   currentId: number;
   onSelect: (id: number) => void;
 }
 
-export function EvolutionChain({ speciesUrl, currentId, onSelect }: Props) {
-  const { status, stages } = useEvolutionChain(speciesUrl);
-
+export function EvolutionChain({ stages, status, currentId, onSelect }: Props) {
   if (status === "loading") {
     return (
       <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
