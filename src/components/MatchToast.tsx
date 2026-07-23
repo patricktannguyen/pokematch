@@ -15,7 +15,7 @@ export function MatchToast({ toast }: Props) {
       role="status"
     >
       <div className="animate-toast-in rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 shadow-lg dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-        🔍 Match confirmed!{" "}
+        Match confirmed!{" "}
         <span className="capitalize">{toast.fromName}</span> &{" "}
         <span className="capitalize">{toast.toName}</span> both register Base
         XP {toast.value}.{" "}
@@ -25,7 +25,7 @@ export function MatchToast({ toast }: Props) {
             win ({describeReason(toast.reason)})!
           </>
         ) : (
-          <>⚖️ Evenly matched!</>
+          <>Evenly matched!</>
         )}
       </div>
     </div>

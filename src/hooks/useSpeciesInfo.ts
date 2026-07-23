@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchSpeciesInfo, type EvolutionStage } from "../api/evolutionChain";
+import { LOADING_DELAY_MS } from "../data/timing";
 
 type Status = "loading" | "error" | "success";
 
@@ -28,11 +29,17 @@ export function useSpeciesInfo(speciesUrl: string) {
     fetchSpeciesInfo(speciesUrl)
       .then((info) => {
         if (ignore) return;
-        setState({ status: "success", ...info });
+        setTimeout(() => {
+          if (ignore) return;
+          setState({ status: "success", ...info });
+        }, LOADING_DELAY_MS);
       })
       .catch(() => {
         if (ignore) return;
-        setState({ status: "error", stages: [], flavorText: null });
+        setTimeout(() => {
+          if (ignore) return;
+          setState({ status: "error", stages: [], flavorText: null });
+        }, LOADING_DELAY_MS);
       });
 
     return () => {

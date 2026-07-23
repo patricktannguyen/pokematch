@@ -14,6 +14,7 @@ import { StatusLed } from "./components/StatusLed";
 import { determineWinner } from "./data/battleOutcome";
 import { getTypeColor } from "./data/typeColors";
 import { isShinyThisSession } from "./data/shinyDex";
+import { TOAST_DURATION_MS } from "./data/timing";
 import { useDiscoveredDex } from "./hooks/useDiscoveredDex";
 import { usePokemonSelection } from "./hooks/usePokemonSelection";
 import { useSpeciesInfo } from "./hooks/useSpeciesInfo";
@@ -58,7 +59,7 @@ function App() {
 
   useEffect(() => {
     if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 2400);
+    const timer = setTimeout(() => setToast(null), TOAST_DURATION_MS);
     return () => clearTimeout(timer);
   }, [toast]);
 

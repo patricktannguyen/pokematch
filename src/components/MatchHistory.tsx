@@ -18,7 +18,7 @@ export function MatchHistory({ history }: Props) {
       <ul className="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-700 dark:bg-slate-800">
         {ordered.map((event) => (
           <li key={event.id} className="text-slate-600 dark:text-slate-300">
-            🔍 <span className="capitalize">{event.fromName}</span> &{" "}
+            <span className="capitalize">{event.fromName}</span> &{" "}
             <span className="capitalize">{event.toName}</span>{" "}
             <span className="font-mono tabular-nums text-slate-400 dark:text-slate-500">
               (Base XP {event.value})
@@ -30,7 +30,7 @@ export function MatchHistory({ history }: Props) {
                 ({describeReason(event.reason)})
               </>
             ) : (
-              <>⚖️ evenly matched</>
+              <>evenly matched</>
             )}
           </li>
         ))}

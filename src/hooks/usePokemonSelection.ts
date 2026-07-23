@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchPokemonById, PokemonNotFoundError } from "../api/pokeapi";
 import { ALL_POKEMON } from "../data/dexUniverse";
 import { findMatches } from "../data/findMatches";
+import { LOADING_DELAY_MS } from "../data/timing";
 import type { PokemonDetail, PokemonSummary } from "../types/pokemon";
 
 export type Status = "idle" | "loading" | "error";
@@ -45,14 +46,18 @@ export function usePokemonSelection(initialId: number) {
 
     const cached = cache.current.get(id);
     if (cached) {
-      setState((s) => ({
-        ...s,
-        detail: cached,
-        matches: findMatches(ALL_POKEMON, cached),
-        status: "idle",
-        errorMessage: null,
-      }));
-      return;
+      setState((s) => ({ ...s, status: "loading", errorMessage: null }));
+      const timer = setTimeout(() => {
+        if (requestId.current !== thisRequest) return;
+        setState((s) => ({
+          ...s,
+          detail: cached,
+          matches: findMatches(ALL_POKEMON, cached),
+          status: "idle",
+          errorMessage: null,
+        }));
+      }, LOADING_DELAY_MS);
+      return () => clearTimeout(timer);
     }
 
     setState((s) => ({ ...s, status: "loading", errorMessage: null }));
@@ -61,13 +66,16 @@ export function usePokemonSelection(initialId: number) {
       .then((detail) => {
         if (requestId.current !== thisRequest) return;
         cache.current.set(id, detail);
-        setState((s) => ({
-          ...s,
-          detail,
-          matches: findMatches(ALL_POKEMON, detail),
-          status: "idle",
-          errorMessage: null,
-        }));
+        setTimeout(() => {
+          if (requestId.current !== thisRequest) return;
+          setState((s) => ({
+            ...s,
+            detail,
+            matches: findMatches(ALL_POKEMON, detail),
+            status: "idle",
+            errorMessage: null,
+          }));
+        }, LOADING_DELAY_MS);
       })
       .catch((err) => {
         if (requestId.current !== thisRequest) return;
@@ -75,13 +83,16 @@ export function usePokemonSelection(initialId: number) {
           err instanceof PokemonNotFoundError
             ? err.message
             : "Something went wrong talking to PokeAPI. Please try again.";
-        setState((s) => ({
-          ...s,
-          detail: null,
-          matches: [],
-          status: "error",
-          errorMessage: message,
-        }));
+        setTimeout(() => {
+          if (requestId.current !== thisRequest) return;
+          setState((s) => ({
+            ...s,
+            detail: null,
+            matches: [],
+            status: "error",
+            errorMessage: message,
+          }));
+        }, LOADING_DELAY_MS);
       });
   }, [state.selectedId]);
 
