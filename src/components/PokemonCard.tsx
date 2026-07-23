@@ -9,7 +9,7 @@ interface Props {
   pokemon: PokemonDetail;
   isShiny: boolean;
   direction: "next" | "prev" | null;
-  justRegistered: boolean;
+  justDiscovered: boolean;
 }
 
 const ENTER_ANIMATION: Record<"next" | "prev" | "none", string> = {
@@ -18,7 +18,7 @@ const ENTER_ANIMATION: Record<"next" | "prev" | "none", string> = {
   none: "animate-rise-in",
 };
 
-export function PokemonCard({ pokemon, isShiny, direction, justRegistered }: Props) {
+export function PokemonCard({ pokemon, isShiny, direction, justDiscovered }: Props) {
   const accent = getTypeColor(pokemon.types[0] ?? "").accent;
   const showShiny = isShiny && Boolean(pokemon.shinySprite);
   const spriteSrc = showShiny ? pokemon.shinySprite : pokemon.sprite;
@@ -29,7 +29,7 @@ export function PokemonCard({ pokemon, isShiny, direction, justRegistered }: Pro
       className={`dex-screen relative flex ${enterAnim} items-center gap-6 rounded-xl border border-t-4 border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800`}
       style={{ borderTopColor: accent }}
     >
-      {justRegistered && <RegisteredStamp />}
+      {justDiscovered && <RegisteredStamp />}
       {spriteSrc && (
         <div className="relative shrink-0">
           <img

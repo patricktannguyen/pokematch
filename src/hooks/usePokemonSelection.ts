@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchPokemonById, PokemonNotFoundError } from "../api/pokeapi";
+import { ALL_POKEMON } from "../data/dexUniverse";
 import { findMatches } from "../data/findMatches";
-import dataset from "../data/pokemon-base-experience.json";
 import type { PokemonDetail, PokemonSummary } from "../types/pokemon";
 
 export type Status = "idle" | "loading" | "error";
@@ -44,8 +44,7 @@ export function usePokemonSelection(initialId: number) {
   }, []);
 
   const selectRandom = useCallback(() => {
-    const pool = dataset as PokemonSummary[];
-    const entry = pool[Math.floor(Math.random() * pool.length)];
+    const entry = ALL_POKEMON[Math.floor(Math.random() * ALL_POKEMON.length)];
     setState((s) => ({ ...s, selectedId: entry.id }));
   }, []);
 
@@ -58,7 +57,7 @@ export function usePokemonSelection(initialId: number) {
       setState((s) => ({
         ...s,
         detail: cached.detail,
-        matches: findMatches(dataset as PokemonSummary[], cached.detail),
+        matches: findMatches(ALL_POKEMON, cached.detail),
         status: "idle",
         errorMessage: null,
         isShiny: cached.isShiny,
@@ -76,7 +75,7 @@ export function usePokemonSelection(initialId: number) {
         setState((s) => ({
           ...s,
           detail,
-          matches: findMatches(dataset as PokemonSummary[], detail),
+          matches: findMatches(ALL_POKEMON, detail),
           status: "idle",
           errorMessage: null,
           isShiny,

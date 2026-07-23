@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { DarkModeToggle } from "./components/DarkModeToggle";
+import { DexProgress } from "./components/DexProgress";
 import { EvolutionChain } from "./components/EvolutionChain";
 import { FlavorText } from "./components/FlavorText";
 import { IdSearchForm } from "./components/IdSearchForm";
@@ -9,7 +10,7 @@ import { PokemonCard } from "./components/PokemonCard";
 import { StatusBanner } from "./components/StatusBanner";
 import { StatusLed } from "./components/StatusLed";
 import { getTypeColor } from "./data/typeColors";
-import { useRegisteredDex } from "./hooks/useRegisteredDex";
+import { useDiscoveredDex } from "./hooks/useDiscoveredDex";
 import { usePokemonSelection } from "./hooks/usePokemonSelection";
 import { useSpeciesInfo } from "./hooks/useSpeciesInfo";
 import type { PokemonSummary } from "./types/pokemon";
@@ -20,22 +21,22 @@ function App() {
   const { detail, matches, status, errorMessage, selectId, stepId, selectRandom, isShiny } =
     usePokemonSelection(INITIAL_ID);
   const evo = useSpeciesInfo(detail?.speciesUrl ?? "");
-  const { isRegistered, register } = useRegisteredDex();
+  const { discoveredCount, isDiscovered, discover } = useDiscoveredDex();
 
-  const [justRegisteredId, setJustRegisteredId] = useState<number | null>(null);
+  const [justDiscoveredId, setJustDiscoveredId] = useState<number | null>(null);
   const [direction, setDirection] = useState<"next" | "prev" | null>(null);
   const [toast, setToast] = useState<MatchToastData | null>(null);
   const toastSeq = useRef(0);
 
   useEffect(() => {
     if (!detail) return;
-    if (!isRegistered(detail.id)) {
-      register(detail.id);
-      setJustRegisteredId(detail.id);
+    if (!isDiscovered(detail.id)) {
+      discover(detail.id);
+      setJustDiscoveredId(detail.id);
     } else {
-      setJustRegisteredId(null);
+      setJustDiscoveredId(null);
     }
-  }, [detail, isRegistered, register]);
+  }, [detail, isDiscovered, discover]);
 
   useEffect(() => {
     if (!toast) return;
@@ -98,6 +99,7 @@ function App() {
               <p className="mt-1 text-slate-500 dark:text-slate-400">
                 Find Pokémon that share the same base experience.
               </p>
+              <DexProgress discoveredCount={discoveredCount} />
             </div>
           </div>
           <DarkModeToggle />
@@ -123,7 +125,7 @@ function App() {
               pokemon={detail}
               isShiny={isShiny}
               direction={direction}
-              justRegistered={justRegisteredId === detail.id}
+              justDiscovered={justDiscoveredId === detail.id}
             />
           )}
         </div>
@@ -146,7 +148,11 @@ function App() {
               Matches ({matches.length})
             </h2>
             {matches.length > 0 ? (
-              <MatchGrid matches={matches} onSelect={handleSelectMatch} />
+              <MatchGrid
+                matches={matches}
+                onSelect={handleSelectMatch}
+                isDiscovered={isDiscovered}
+              />
             ) : (
               <StatusBanner kind="empty" />
             )}
