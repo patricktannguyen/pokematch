@@ -18,6 +18,10 @@ function makeSelected(overrides: Partial<PokemonDetail>): PokemonDetail {
     height: 7,
     weight: 69,
     types: ["grass"],
+    stats: [],
+    cryUrl: null,
+    shinySprite: null,
+    speciesUrl: "https://pokeapi.co/api/v2/pokemon-species/1/",
     ...overrides,
   };
 }

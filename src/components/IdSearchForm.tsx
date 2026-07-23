@@ -23,11 +23,11 @@ export function IdSearchForm({ onSubmit }: Props) {
         placeholder="Enter a Pokémon ID, e.g. 25"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        className="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-500"
       />
       <button
         type="submit"
-        className="rounded-lg bg-indigo-600 px-5 py-2 font-medium text-white transition hover:bg-indigo-700"
+        className="rounded-lg bg-indigo-600 px-5 py-2 font-medium text-white transition hover:bg-indigo-700 active:scale-95"
       >
         Search
       </button>

@@ -1,3 +1,4 @@
+import { resolveCryUrl } from "../data/cryUrl";
 import type { PokemonDetail } from "../types/pokemon";
 
 const API_BASE = "https://pokeapi.co/api/v2";
@@ -18,8 +19,11 @@ interface PokeApiPokemonResponse {
   base_experience: number | null;
   height: number;
   weight: number;
-  sprites: { front_default: string | null };
+  sprites: { front_default: string | null; front_shiny: string | null };
   types: { type: { name: string } }[];
+  stats: { base_stat: number; stat: { name: string } }[];
+  cries?: { latest: string | null; legacy: string | null };
+  species: { url: string };
 }
 
 export async function fetchPokemonById(id: number): Promise<PokemonDetail> {
@@ -42,5 +46,9 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetail> {
     height: data.height,
     weight: data.weight,
     types: data.types.map((t) => t.type.name),
+    stats: data.stats.map((s) => ({ name: s.stat.name, base: s.base_stat })),
+    cryUrl: resolveCryUrl(data.cries),
+    shinySprite: data.sprites.front_shiny,
+    speciesUrl: data.species.url,
   };
 }

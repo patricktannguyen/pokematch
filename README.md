@@ -11,8 +11,10 @@ recompute matches.
 ## Main use cases
 
 1. **Look up a Pokémon by ID** — type an ID (e.g. `25`) into the search box
-   to see its name, sprite, types, base experience, height, and weight,
-   fetched live from PokeAPI.
+   to see its name, sprite, types, base experience, height, weight, base
+   stats, and evolution chain, plus a playable cry, all fetched live from
+   PokeAPI. There's also a small ~1-in-20 chance the shiny sprite shows up
+   instead, sparkle and all.
 2. **Browse Pokémon that share a base experience** — the matches grid below
    the selected Pokémon lists every other Pokémon with the same
    `base_experience`. Clicking a match card selects it, refetches its detail,
@@ -21,6 +23,22 @@ recompute matches.
 3. **Handle the edges gracefully** — an unknown ID (e.g. `99999`) shows a
    "not found" message instead of crashing, and a Pokémon with no matches
    shows an explicit "no matches" state.
+
+## Polish
+
+- **Type-colored accents** — the detail card's top border and type pills
+  are tinted with each Pokémon's own type color.
+- **Micro-animations** — the detail card rises/fades in on each new
+  selection, match grid tiles stagger in, and buttons give tactile press
+  feedback.
+- **Dark mode** — a manual toggle in the header, persisted in
+  `localStorage` and defaulting to your OS's `prefers-color-scheme` the
+  first time you visit.
+- **Richer detail view** — base stat bars (tinted to match the Pokémon's
+  type), a cry playback button, and a flattened evolution chain you can
+  click through.
+- **Flavorful states** — a CSS-only Pokéball spinner while loading, and
+  more characterful copy for the "not found" and "no matches" states.
 
 ## Running locally
 
@@ -42,9 +60,16 @@ Other scripts:
 ## Data source and a deliberate tradeoff
 
 Everything comes from [PokeAPI v2](https://pokeapi.co/docs/v2#pokemon). The
-**selected** Pokémon's detail (name, sprite, types, height, weight, base
-experience) is fetched live on every selection from
-`GET https://pokeapi.co/api/v2/pokemon/{id}`.
+**selected** Pokémon's detail (name, sprite, shiny sprite, types, height,
+weight, base experience, base stats, and cry audio) is fetched live on every
+selection from `GET https://pokeapi.co/api/v2/pokemon/{id}`.
+
+The evolution chain needs two *additional* live requests per selection —
+`GET /pokemon-species/{id}` to find the chain URL, then
+`GET /evolution-chain/{id}` for the chain itself — handled by a small,
+independent hook (`useEvolutionChain`) decoupled from the main detail
+fetch/cache, so a failure there (or a slow response) never blocks the rest
+of the page.
 
 Matching, however, needs `base_experience` for *every* Pokémon to know who
 shares a value — and PokeAPI's REST list endpoint only returns `name`/`url`,
@@ -82,4 +107,9 @@ subpath without hardcoding the repo name.
 
 ## Stack
 
-Vite, React, TypeScript, Tailwind CSS, Vitest.
+Vite, React, TypeScript, Tailwind CSS, Vitest. No additional runtime
+dependencies were added for the polish features above — dark mode,
+animations, and cry playback all use native browser APIs (`localStorage`,
+`matchMedia`, `Audio`) plus Tailwind v4's CSS-first `@theme`/`@custom-variant`
+config, staying consistent with the project's original zero-dependency
+approach.

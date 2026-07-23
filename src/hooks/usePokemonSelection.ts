@@ -12,7 +12,15 @@ interface State {
   matches: PokemonSummary[];
   status: Status;
   errorMessage: string | null;
+  isShiny: boolean;
 }
+
+interface CacheEntry {
+  detail: PokemonDetail;
+  isShiny: boolean;
+}
+
+const SHINY_CHANCE = 1 / 20;
 
 export function usePokemonSelection(initialId: number) {
   const [state, setState] = useState<State>({
@@ -21,9 +29,10 @@ export function usePokemonSelection(initialId: number) {
     matches: [],
     status: "loading",
     errorMessage: null,
+    isShiny: false,
   });
 
-  const cache = useRef(new Map<number, PokemonDetail>());
+  const cache = useRef(new Map<number, CacheEntry>());
   const requestId = useRef(0);
 
   const selectId = useCallback((id: number) => {
@@ -38,10 +47,11 @@ export function usePokemonSelection(initialId: number) {
     if (cached) {
       setState((s) => ({
         ...s,
-        detail: cached,
-        matches: findMatches(dataset as PokemonSummary[], cached),
+        detail: cached.detail,
+        matches: findMatches(dataset as PokemonSummary[], cached.detail),
         status: "idle",
         errorMessage: null,
+        isShiny: cached.isShiny,
       }));
       return;
     }
@@ -51,13 +61,15 @@ export function usePokemonSelection(initialId: number) {
     fetchPokemonById(id)
       .then((detail) => {
         if (requestId.current !== thisRequest) return;
-        cache.current.set(id, detail);
+        const isShiny = Math.random() < SHINY_CHANCE;
+        cache.current.set(id, { detail, isShiny });
         setState((s) => ({
           ...s,
           detail,
           matches: findMatches(dataset as PokemonSummary[], detail),
           status: "idle",
           errorMessage: null,
+          isShiny,
         }));
       })
       .catch((err) => {
@@ -72,6 +84,7 @@ export function usePokemonSelection(initialId: number) {
           matches: [],
           status: "error",
           errorMessage: message,
+          isShiny: false,
         }));
       });
   }, [state.selectedId]);

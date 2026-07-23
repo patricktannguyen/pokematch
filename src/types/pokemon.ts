@@ -5,9 +5,18 @@ export interface PokemonSummary {
   sprite: string | null;
 }
 
+export interface PokemonStat {
+  name: string;
+  base: number;
+}
+
 export interface PokemonDetail extends Omit<PokemonSummary, "base_experience"> {
   base_experience: number | null;
   height: number;
   weight: number;
   types: string[];
+  stats: PokemonStat[];
+  cryUrl: string | null;
+  shinySprite: string | null;
+  speciesUrl: string;
 }
