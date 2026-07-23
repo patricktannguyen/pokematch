@@ -39,9 +39,7 @@ describe("determineWinner", () => {
         { name: "defense", base: 100 },
       ],
     });
-    const outcome = determineWinner(a, b);
-    expect(outcome.winner?.name).toBe("a");
-    expect(outcome.reason).toBe("type");
+    expect(determineWinner(a, b)?.name).toBe("a");
   });
 
   it("combines effectiveness across dual defending types to widen the advantage", () => {
@@ -52,9 +50,7 @@ describe("determineWinner", () => {
       stats: [{ name: "hp", base: 1000 }],
     });
     // water is 2x vs fire and 2x vs rock (4x combined); fire/rock's best vs water is only 1x
-    const outcome = determineWinner(a, b);
-    expect(outcome.winner?.name).toBe("a");
-    expect(outcome.reason).toBe("type");
+    expect(determineWinner(a, b)?.name).toBe("a");
   });
 
   it("falls back to a one-round combat calculation when neither side has a type advantage", () => {
@@ -77,12 +73,10 @@ describe("determineWinner", () => {
       ],
     });
     // a deals 60-10=50 to b (b left at 50); b deals 40-20=20 to a (a left at 80) -> a wins
-    const outcome = determineWinner(a, b);
-    expect(outcome.winner?.name).toBe("a");
-    expect(outcome.reason).toBe("stats");
+    expect(determineWinner(a, b)?.name).toBe("a");
   });
 
-  it("returns a tie outcome when neither type nor the combat calculation favors either side", () => {
+  it("returns null when neither type nor the combat calculation favors either side", () => {
     const a = makePokemon({
       name: "a",
       types: ["normal"],
@@ -101,9 +95,7 @@ describe("determineWinner", () => {
         { name: "defense", base: 30 },
       ],
     });
-    const outcome = determineWinner(a, b);
-    expect(outcome.winner).toBeNull();
-    expect(outcome.reason).toBe("tie");
+    expect(determineWinner(a, b)).toBeNull();
   });
 });
 

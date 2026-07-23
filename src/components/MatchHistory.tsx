@@ -1,4 +1,3 @@
-import { describeReason } from "../data/battleOutcome";
 import type { MatchEvent } from "../types/pokemon";
 
 interface Props {
@@ -25,10 +24,7 @@ export function MatchHistory({ history }: Props) {
             </span>{" "}
             —{" "}
             {event.winnerName ? (
-              <>
-                🏆 <span className="capitalize">{event.winnerName}</span> wins
-                ({describeReason(event.reason)})
-              </>
+              <span className="capitalize">{event.winnerName} wins</span>
             ) : (
               <>evenly matched</>
             )}

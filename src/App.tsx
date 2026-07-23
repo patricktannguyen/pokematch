@@ -6,7 +6,6 @@ import { FlavorText } from "./components/FlavorText";
 import { IdSearchForm } from "./components/IdSearchForm";
 import { MatchGrid } from "./components/MatchGrid";
 import { MatchHistory } from "./components/MatchHistory";
-import { MatchToast } from "./components/MatchToast";
 import { PokemonCard } from "./components/PokemonCard";
 import { ShinyProgress } from "./components/ShinyProgress";
 import { StatusBanner } from "./components/StatusBanner";
@@ -14,7 +13,6 @@ import { StatusLed } from "./components/StatusLed";
 import { determineWinner } from "./data/battleOutcome";
 import { getTypeColor } from "./data/typeColors";
 import { isShinyThisSession } from "./data/shinyDex";
-import { TOAST_DURATION_MS } from "./data/timing";
 import { useDiscoveredDex } from "./hooks/useDiscoveredDex";
 import { usePokemonSelection } from "./hooks/usePokemonSelection";
 import { useSpeciesInfo } from "./hooks/useSpeciesInfo";
@@ -37,9 +35,8 @@ function App() {
 
   const [justDiscoveredId, setJustDiscoveredId] = useState<number | null>(null);
   const [direction, setDirection] = useState<"next" | "prev" | null>(null);
-  const [toast, setToast] = useState<MatchEvent | null>(null);
   const [matchHistory, setMatchHistory] = useState<MatchEvent[]>([]);
-  const toastSeq = useRef(0);
+  const matchEventSeq = useRef(0);
   const pendingMatchRef = useRef<PendingMatch | null>(null);
 
   const shinyDiscoveredCount = useMemo(
@@ -58,12 +55,6 @@ function App() {
   }, [detail, isDiscovered, discover]);
 
   useEffect(() => {
-    if (!toast) return;
-    const timer = setTimeout(() => setToast(null), TOAST_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [toast]);
-
-  useEffect(() => {
     const pending = pendingMatchRef.current;
     if (!pending) return;
     if (status === "error") {
@@ -73,16 +64,14 @@ function App() {
     if (!detail || detail.id !== pending.toId) return;
     pendingMatchRef.current = null;
 
-    const { winner, reason } = determineWinner(pending.fromDetail, detail);
+    const winner = determineWinner(pending.fromDetail, detail);
     const event: MatchEvent = {
-      id: ++toastSeq.current,
+      id: ++matchEventSeq.current,
       fromName: pending.fromDetail.name,
       toName: pending.toName,
       value: pending.value,
       winnerName: winner?.name ?? null,
-      reason,
     };
-    setToast(event);
     setMatchHistory((h) => [...h, event]);
   }, [detail, status]);
 
@@ -133,7 +122,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <MatchToast toast={toast} />
       <div className="mx-auto max-w-3xl px-4 py-10">
         <header className="mb-8 flex items-start justify-between gap-4">
           <div className="flex items-center gap-2">

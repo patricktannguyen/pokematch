@@ -1,20 +1,5 @@
 import { bestOffensiveMultiplier } from "./typeEffectiveness";
-import type { BattleReason, PokemonDetail } from "../types/pokemon";
-
-export interface BattleOutcome {
-  winner: PokemonDetail | null;
-  reason: BattleReason;
-}
-
-const REASON_LABEL: Record<Exclude<BattleReason, "tie">, string> = {
-  type: "type advantage",
-  stats: "higher stats",
-};
-
-export function describeReason(reason: BattleReason): string | null {
-  if (reason === "tie") return null;
-  return REASON_LABEL[reason];
-}
+import type { PokemonDetail } from "../types/pokemon";
 
 function getStat(pokemon: PokemonDetail, statName: string): number {
   return pokemon.stats.find((s) => s.name === statName)?.base ?? 0;
@@ -33,13 +18,12 @@ export function oneRoundWinner(a: PokemonDetail, b: PokemonDetail): PokemonDetai
   return aRemainingHp > bRemainingHp ? a : b;
 }
 
-export function determineWinner(a: PokemonDetail, b: PokemonDetail): BattleOutcome {
+export function determineWinner(a: PokemonDetail, b: PokemonDetail): PokemonDetail | null {
   const aAdvantage = bestOffensiveMultiplier(a.types, b.types);
   const bAdvantage = bestOffensiveMultiplier(b.types, a.types);
 
-  if (aAdvantage > bAdvantage) return { winner: a, reason: "type" };
-  if (bAdvantage > aAdvantage) return { winner: b, reason: "type" };
+  if (aAdvantage > bAdvantage) return a;
+  if (bAdvantage > aAdvantage) return b;
 
-  const winner = oneRoundWinner(a, b);
-  return { winner, reason: winner ? "stats" : "tie" };
+  return oneRoundWinner(a, b);
 }
