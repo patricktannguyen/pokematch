@@ -1,3 +1,4 @@
+import { describeReason } from "../data/battleOutcome";
 import type { MatchEvent } from "../types/pokemon";
 
 interface Props {
@@ -21,7 +22,7 @@ export function MatchToast({ toast }: Props) {
         {toast.winnerName ? (
           <>
             🏆 <span className="capitalize">{toast.winnerName}</span> would
-            win!
+            win ({describeReason(toast.reason)})!
           </>
         ) : (
           <>⚖️ Evenly matched!</>

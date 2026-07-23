@@ -21,10 +21,13 @@ export interface PokemonDetail extends Omit<PokemonSummary, "base_experience"> {
   speciesUrl: string;
 }
 
+export type BattleReason = "type" | "stats" | "tie";
+
 export interface MatchEvent {
   id: number;
   fromName: string;
   toName: string;
   value: number;
   winnerName: string | null;
+  reason: BattleReason;
 }

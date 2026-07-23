@@ -13,7 +13,7 @@ recompute matches.
 1. **Look up a Pokémon by ID** — type an ID (e.g. `25`) into the search box
    to see its name, sprite, types, base experience, height, weight, base
    stats, and evolution chain, plus a playable cry, all fetched live from
-   PokeAPI. There's also a small ~1-in-20 chance the shiny sprite shows up
+   PokeAPI. There's also a small ~1-in-12 chance the shiny sprite shows up
    instead, sparkle and all.
 2. **Browse Pokémon that share a base experience** — the matches grid below
    the selected Pokémon lists every other Pokémon with the same

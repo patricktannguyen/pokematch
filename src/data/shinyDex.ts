@@ -1,6 +1,6 @@
 import { ALL_POKEMON } from "./dexUniverse";
 
-const SHINY_CHANCE = 1 / 20;
+const SHINY_CHANCE = 1 / 12;
 
 const SHINY_ID_SET: Set<number> = new Set(
   ALL_POKEMON.filter(() => Math.random() < SHINY_CHANCE).map((p) => p.id),

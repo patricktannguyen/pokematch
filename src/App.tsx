@@ -72,13 +72,14 @@ function App() {
     if (!detail || detail.id !== pending.toId) return;
     pendingMatchRef.current = null;
 
-    const winner = determineWinner(pending.fromDetail, detail);
+    const { winner, reason } = determineWinner(pending.fromDetail, detail);
     const event: MatchEvent = {
       id: ++toastSeq.current,
       fromName: pending.fromDetail.name,
       toName: pending.toName,
       value: pending.value,
       winnerName: winner?.name ?? null,
+      reason,
     };
     setToast(event);
     setMatchHistory((h) => [...h, event]);
