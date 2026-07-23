@@ -20,3 +20,10 @@ export interface PokemonDetail extends Omit<PokemonSummary, "base_experience"> {
   shinySprite: string | null;
   speciesUrl: string;
 }
+
+export interface MatchEvent {
+  id: number;
+  fromName: string;
+  toName: string;
+  value: number;
+}

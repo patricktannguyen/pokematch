@@ -1,12 +1,7 @@
-export interface MatchToastData {
-  id: number;
-  fromName: string;
-  toName: string;
-  value: number;
-}
+import type { MatchEvent } from "../types/pokemon";
 
 interface Props {
-  toast: MatchToastData | null;
+  toast: MatchEvent | null;
 }
 
 export function MatchToast({ toast }: Props) {

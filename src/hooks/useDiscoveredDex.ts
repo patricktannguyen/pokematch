@@ -19,5 +19,5 @@ export function useDiscoveredDex() {
     });
   }, []);
 
-  return { discoveredCount: discovered.size, isDiscovered, discover };
+  return { discovered, discoveredCount: discovered.size, isDiscovered, discover };
 }

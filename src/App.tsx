@@ -1,32 +1,41 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DarkModeToggle } from "./components/DarkModeToggle";
 import { DexProgress } from "./components/DexProgress";
 import { EvolutionChain } from "./components/EvolutionChain";
 import { FlavorText } from "./components/FlavorText";
 import { IdSearchForm } from "./components/IdSearchForm";
 import { MatchGrid } from "./components/MatchGrid";
-import { MatchToast, type MatchToastData } from "./components/MatchToast";
+import { MatchHistory } from "./components/MatchHistory";
+import { MatchToast } from "./components/MatchToast";
 import { PokemonCard } from "./components/PokemonCard";
+import { ShinyProgress } from "./components/ShinyProgress";
 import { StatusBanner } from "./components/StatusBanner";
 import { StatusLed } from "./components/StatusLed";
 import { getTypeColor } from "./data/typeColors";
+import { isShinyThisSession } from "./data/shinyDex";
 import { useDiscoveredDex } from "./hooks/useDiscoveredDex";
 import { usePokemonSelection } from "./hooks/usePokemonSelection";
 import { useSpeciesInfo } from "./hooks/useSpeciesInfo";
-import type { PokemonSummary } from "./types/pokemon";
+import type { MatchEvent, PokemonSummary } from "./types/pokemon";
 
 const INITIAL_ID = 1;
 
 function App() {
-  const { detail, matches, status, errorMessage, selectId, stepId, selectRandom, isShiny } =
+  const { detail, matches, status, errorMessage, selectId, stepId, selectRandom } =
     usePokemonSelection(INITIAL_ID);
   const evo = useSpeciesInfo(detail?.speciesUrl ?? "");
-  const { discoveredCount, isDiscovered, discover } = useDiscoveredDex();
+  const { discovered, discoveredCount, isDiscovered, discover } = useDiscoveredDex();
 
   const [justDiscoveredId, setJustDiscoveredId] = useState<number | null>(null);
   const [direction, setDirection] = useState<"next" | "prev" | null>(null);
-  const [toast, setToast] = useState<MatchToastData | null>(null);
+  const [toast, setToast] = useState<MatchEvent | null>(null);
+  const [matchHistory, setMatchHistory] = useState<MatchEvent[]>([]);
   const toastSeq = useRef(0);
+
+  const shinyDiscoveredCount = useMemo(
+    () => [...discovered].filter(isShinyThisSession).length,
+    [discovered],
+  );
 
   useEffect(() => {
     if (!detail) return;
@@ -73,12 +82,14 @@ function App() {
   function handleSelectMatch(pokemon: PokemonSummary) {
     setDirection(null);
     if (detail) {
-      setToast({
+      const event: MatchEvent = {
         id: ++toastSeq.current,
         fromName: detail.name,
         toName: pokemon.name,
         value: pokemon.base_experience,
-      });
+      };
+      setToast(event);
+      setMatchHistory((h) => [...h, event]);
     }
     selectId(pokemon.id);
   }
@@ -100,6 +111,7 @@ function App() {
                 Find Pokémon that share the same base experience.
               </p>
               <DexProgress discoveredCount={discoveredCount} />
+              <ShinyProgress shinyDiscoveredCount={shinyDiscoveredCount} />
             </div>
           </div>
           <DarkModeToggle />
@@ -123,7 +135,6 @@ function App() {
             <PokemonCard
               key={detail.id}
               pokemon={detail}
-              isShiny={isShiny}
               direction={direction}
               justDiscovered={justDiscoveredId === detail.id}
             />
@@ -137,6 +148,7 @@ function App() {
               status={evo.status}
               currentId={detail.id}
               onSelect={handleSelectId}
+              isDiscovered={isDiscovered}
             />
             <FlavorText text={evo.flavorText} />
           </>
@@ -158,6 +170,8 @@ function App() {
             )}
           </section>
         )}
+
+        <MatchHistory history={matchHistory} />
       </div>
     </div>
   );

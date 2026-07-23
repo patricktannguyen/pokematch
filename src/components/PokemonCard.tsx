@@ -2,12 +2,12 @@ import { CryButton } from "./CryButton";
 import { RegisteredStamp } from "./RegisteredStamp";
 import { StatBars } from "./StatBars";
 import { formatDexNumber } from "../data/dexNumber";
+import { isShinyThisSession } from "../data/shinyDex";
 import { getTypeColor } from "../data/typeColors";
 import type { PokemonDetail } from "../types/pokemon";
 
 interface Props {
   pokemon: PokemonDetail;
-  isShiny: boolean;
   direction: "next" | "prev" | null;
   justDiscovered: boolean;
 }
@@ -18,8 +18,9 @@ const ENTER_ANIMATION: Record<"next" | "prev" | "none", string> = {
   none: "animate-rise-in",
 };
 
-export function PokemonCard({ pokemon, isShiny, direction, justDiscovered }: Props) {
+export function PokemonCard({ pokemon, direction, justDiscovered }: Props) {
   const accent = getTypeColor(pokemon.types[0] ?? "").accent;
+  const isShiny = isShinyThisSession(pokemon.id);
   const showShiny = isShiny && Boolean(pokemon.shinySprite);
   const spriteSrc = showShiny ? pokemon.shinySprite : pokemon.sprite;
   const enterAnim = ENTER_ANIMATION[direction ?? "none"];
