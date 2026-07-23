@@ -5,7 +5,8 @@ Pokémon ID to see that Pokémon, plus every other Pokémon that shares the same
 `base_experience`. Click any match to make it the new selection and
 recompute matches.
 
-**Live URL:** TODO
+**Live URL:** `https://<your-username>.github.io/<repo-name>/` (see
+[Deploying to GitHub Pages](#deploying-to-github-pages) below)
 
 ## Main use cases
 
@@ -55,6 +56,29 @@ dataset to `src/data/pokemon-base-experience.json` (committed to the repo),
 so match filtering is instant and client-side. Pokémon with a `null`
 `base_experience` (a handful of special/unbattlable forms) are excluded from
 the dataset and never produce matches.
+
+## Deploying to GitHub Pages
+
+The repo includes a GitHub Actions workflow
+(`.github/workflows/deploy.yml`) that builds the app and publishes `dist/`
+to GitHub Pages on every push to `main`. One-time setup:
+
+1. Create a GitHub repo and push this project to it:
+   ```bash
+   git remote add origin https://github.com/<your-username>/<repo-name>.git
+   git push -u origin main
+   ```
+2. In the repo, go to **Settings → Pages** and set **Source** to
+   **GitHub Actions**.
+3. Push (or re-run) — the **Deploy to GitHub Pages** workflow will build
+   and deploy automatically. Watch progress under the **Actions** tab.
+4. Once it finishes, the site is live at
+   `https://<your-username>.github.io/<repo-name>/` (also shown in
+   **Settings → Pages** and in the workflow run's `deploy` job output).
+
+No further configuration is needed — `vite.config.ts` uses relative
+asset paths (`base: './'`), so the build works under a Pages project
+subpath without hardcoding the repo name.
 
 ## Stack
 
